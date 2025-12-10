@@ -1,17 +1,42 @@
 import modal
+import subprocess
+import tempfile
+import os
 
 app = modal.App("76")
 img = (
   modal.Image.from_registry("nvidia/cuda:12.4.0-base-ubuntu22.04")
   .apt_install("python-is-python3", "python3-pip")
-  #.pip_install("max", index_url="https://packages.modular.com/max-nightly/pypi/simple")
   .pip_install("mojo", index_url="https://dl.modular.com/public/nightly/python/simple/", extra_options="--pre")
 )
 
-
-@app.function(image=img)
-def main(): 
-  # Use mojo python interop to call mojo code
-  return("return the result")
-
-
+@app.function(image=img, gpu="T4")
+def main(mojo_code: str) -> dict:
+    # Write code to a temp file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.mojo', delete=False) as f:
+        f.write(mojo_code)
+        temp_path = f.name
+    
+    try:
+        # Run mojo
+        result = subprocess.run(
+            ["mojo", "run", temp_path],
+            capture_output=True,
+            text=True
+        )
+        
+        # Filter out socket errors from stderr
+        stderr_lines = [
+            line for line in result.stderr.splitlines() 
+            if "socket.cc" not in line.lower()
+        ]
+        
+        return {
+            "stdout": result.stdout,
+            "stderr": "\n".join(stderr_lines),
+            "exit_code": result.returncode,
+            "success": result.returncode == 0
+        }
+    finally:
+        # Clean up temp file
+        os.unlink(temp_path)
