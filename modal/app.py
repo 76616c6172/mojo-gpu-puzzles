@@ -10,7 +10,7 @@ img = (
   .pip_install("mojo", index_url="https://dl.modular.com/public/nightly/python/simple/", extra_options="--pre")
 )
 
-@app.function(image=img, gpu="A100")
+@app.function(image=img, gpu="A10")
 def main(mojo_code: str):
     # Get real GPU info
     gpu_result = subprocess.run(

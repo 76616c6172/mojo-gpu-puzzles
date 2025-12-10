@@ -2,6 +2,6 @@
 deploy:
 	@ modal deploy modal/app.py
 
-.PHONY: run
+.PHONY: puzzle
 puzzle:
 	@ uv run modal/call.py
