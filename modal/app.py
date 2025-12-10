@@ -10,33 +10,43 @@ img = (
   .pip_install("mojo", index_url="https://dl.modular.com/public/nightly/python/simple/", extra_options="--pre")
 )
 
-@app.function(image=img, gpu="T4")
-def main(mojo_code: str) -> dict:
-    # Write code to a temp file
+@app.function(image=img, gpu="A100")
+def main(mojo_code: str):
+    # Get real GPU info
+    gpu_result = subprocess.run(
+        ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"],
+        capture_output=True,
+        text=True
+    )
+    gpu_info = gpu_result.stdout.strip()
+    yield {"status": "gpu_info", "gpu": gpu_info}
+
+    # Write code to temp file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.mojo', delete=False) as f:
         f.write(mojo_code)
         temp_path = f.name
     
+    yield {"status": "compiling"}
+
     try:
-        # Run mojo
         result = subprocess.run(
             ["mojo", "run", temp_path],
             capture_output=True,
             text=True
         )
         
-        # Filter out socket errors from stderr
+        # Filter out noisy socket errors
         stderr_lines = [
-            line for line in result.stderr.splitlines() 
-            if "socket.cc" not in line.lower()
+            line for line in result.stderr.splitlines()
+            if "socket.cc" not in line
         ]
         
-        return {
+        yield {
+            "status": "complete",
             "stdout": result.stdout,
-            "stderr": "\n".join(stderr_lines),
+            "stderr": "\n".join(stderr_lines).strip(),
             "exit_code": result.returncode,
             "success": result.returncode == 0
         }
     finally:
-        # Clean up temp file
         os.unlink(temp_path)

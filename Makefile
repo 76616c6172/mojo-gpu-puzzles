@@ -3,5 +3,5 @@ deploy:
 	@ modal deploy modal/app.py
 
 .PHONY: run
-call:
+puzzle:
 	@ uv run modal/call.py
