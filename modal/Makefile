@@ -3,5 +3,5 @@ deploy:
 	@ modal deploy app.py
 
 .PHONY: run
-run:
+call:
 	@ uv run call.py
