@@ -1,17 +1,37 @@
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
 
 import modal
 
-import tomli as tomllib
+LOCAL_PYPROJECT = Path(__file__).resolve().parents[1] / "pyproject.toml"
+RUNTIME_PYPROJECT = Path("/root/pyproject.toml")
 
 def _read_project_dependency(name: str) -> str:
-    pyproject = tomllib.loads(Path("pyproject.toml").read_text())
-    for dep in pyproject["project"]["dependencies"]:
-        if dep.startswith(f"{name}"):
-            return dep
+    pyproject = None
+    for pyproject_path in (LOCAL_PYPROJECT, RUNTIME_PYPROJECT):
+        if pyproject_path.exists():
+            pyproject = pyproject_path.read_text()
+            break
+    if pyproject is None:
+        raise RuntimeError("Could not find pyproject.toml for dependency resolution")
+
+    in_dependencies = False
+    for line in pyproject.splitlines():
+        stripped = line.strip()
+        if stripped == "dependencies = [":
+            in_dependencies = True
+            continue
+        if in_dependencies and stripped == "]":
+            break
+        if in_dependencies:
+            match = re.match(r'"([^"]+)"\s*,?$', stripped)
+            if match:
+                dep = match.group(1)
+                if dep.startswith(f"{name}"):
+                    return dep
     raise RuntimeError(f"Could not find dependency for {name!r} in pyproject.toml")
 
 
@@ -28,6 +48,8 @@ img = (
       index_url="https://whl.modular.com/nightly/simple/",
       extra_options="--pre --extra-index-url https://pypi.org/simple",
   )
+  # The runtime container imports this module again, so keep pyproject.toml available.
+  .add_local_file(LOCAL_PYPROJECT, remote_path="/root/pyproject.toml")
 )
 
 @app.function(image=img, gpu="A10")
