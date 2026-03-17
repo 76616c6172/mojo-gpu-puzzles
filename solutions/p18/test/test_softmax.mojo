@@ -12,7 +12,7 @@ comptime BLOCK_DIM_X = 1 << log2_ceil(SIZE)
 comptime dtype = DType.float32
 
 
-def test_softmax() raises:
+def test_softmax():
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[DType.float32](SIZE)
         out.enqueue_fill(0)
@@ -79,5 +79,5 @@ def test_softmax() raises:
             print("All tests passed 🎉")
 
 
-def main() raises:
+def main():
     test_softmax()

@@ -29,7 +29,7 @@ fn broadcast_add[
 
 
 # ANCHOR_END: broadcast_add_layout_tensor
-def main() raises:
+def main():
     with DeviceContext() as ctx:
         out_buf = ctx.enqueue_create_buffer[dtype](SIZE * SIZE)
         out_buf.enqueue_fill(0)

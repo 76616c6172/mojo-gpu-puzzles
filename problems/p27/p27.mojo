@@ -180,7 +180,7 @@ fn block_normalize_vector[
 # ANCHOR_END: block_normalize
 
 
-def main() raises:
+def main():
     if len(argv()) != 2:
         print(
             "Usage: --traditional-dot-product | --block-sum-dot-product |"

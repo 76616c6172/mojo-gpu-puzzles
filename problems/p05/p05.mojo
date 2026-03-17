@@ -22,7 +22,7 @@ fn broadcast_add(
 
 
 # ANCHOR_END: broadcast_add
-def main() raises:
+def main():
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[dtype](SIZE * SIZE)
         out.enqueue_fill(0)

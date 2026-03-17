@@ -25,7 +25,7 @@ fn dot_product(
 # ANCHOR_END: dot_product
 
 
-def main() raises:
+def main():
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[dtype](1)
         out.enqueue_fill(0)

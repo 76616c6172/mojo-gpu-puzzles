@@ -43,7 +43,7 @@ fn add_10_shared(
 # ANCHOR_END: add_10_shared_solution
 
 
-def main() raises:
+def main():
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[dtype](SIZE)
         out.enqueue_fill(0)

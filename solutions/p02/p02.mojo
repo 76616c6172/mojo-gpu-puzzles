@@ -22,7 +22,7 @@ fn add(
 # ANCHOR_END: add_solution
 
 
-def main() raises:
+def main():
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[dtype](SIZE)
         out.enqueue_fill(0)

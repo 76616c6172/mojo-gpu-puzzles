@@ -212,7 +212,7 @@ fn conditional_broadcast[
 # ANCHOR_END: conditional_broadcast_solution
 
 
-def test_neighbor_difference() raises:
+def test_neighbor_difference():
     with DeviceContext() as ctx:
         # Create test data: [0, 1, 4, 9, 16, 25, ...] (squares)
         input_buf = ctx.enqueue_create_buffer[dtype](SIZE)
@@ -256,7 +256,7 @@ def test_neighbor_difference() raises:
     print("✅ Basic neighbor difference test passed!")
 
 
-def test_moving_average() raises:
+def test_moving_average():
     with DeviceContext() as ctx:
         # Create test data: [1, 2, 4, 7, 11, 16, 22, 29, ...]
         input_buf = ctx.enqueue_create_buffer[dtype](SIZE_2)
@@ -320,7 +320,7 @@ def test_moving_average() raises:
     print("✅ Moving average test passed!")
 
 
-def test_broadcast_shuffle_coordination() raises:
+def test_broadcast_shuffle_coordination():
     with DeviceContext() as ctx:
         # Create test data: [2, 4, 6, 8, 1, 3, 5, 7, ...]
         input_buf = ctx.enqueue_create_buffer[dtype](SIZE)
@@ -375,7 +375,7 @@ def test_broadcast_shuffle_coordination() raises:
     print("✅ Broadcast + Shuffle coordination test passed!")
 
 
-def test_basic_broadcast() raises:
+def test_basic_broadcast():
     with DeviceContext() as ctx:
         # Create test data: [1, 2, 3, 4, 5, 6, 7, 8, ...]
         input_buf = ctx.enqueue_create_buffer[dtype](SIZE)
@@ -421,7 +421,7 @@ def test_basic_broadcast() raises:
     print("✅ Basic broadcast test passed!")
 
 
-def test_conditional_broadcast() raises:
+def test_conditional_broadcast():
     with DeviceContext() as ctx:
         # Create test data: [3, 1, 7, 2, 9, 4, 6, 8, ...]
         input_buf = ctx.enqueue_create_buffer[dtype](SIZE)
@@ -482,7 +482,7 @@ def test_conditional_broadcast() raises:
     print("✅ Conditional broadcast test passed!")
 
 
-def main() raises:
+def main():
     print("WARP_SIZE: ", WARP_SIZE)
     if len(argv()) != 2:
         print(

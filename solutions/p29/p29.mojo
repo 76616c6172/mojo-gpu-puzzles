@@ -271,7 +271,7 @@ fn double_buffered_stencil_computation[
 # ANCHOR_END: double_buffered_stencil_solution
 
 
-def test_multi_stage_pipeline() raises:
+def test_multi_stage_pipeline():
     """Test Puzzle 26A: Multi-Stage Pipeline Coordination."""
     with DeviceContext() as ctx:
         out = ctx.enqueue_create_buffer[dtype](SIZE)
@@ -332,7 +332,7 @@ def test_multi_stage_pipeline() raises:
             print("✅ Multi-stage pipeline coordination test PASSED!")
 
 
-def test_double_buffered_stencil() raises:
+def test_double_buffered_stencil():
     """Test Puzzle 26B: Double-Buffered Stencil Computation."""
     with DeviceContext() as ctx:
         # Test Puzzle 26B: Double-Buffered Stencil Computation
@@ -409,7 +409,7 @@ def test_double_buffered_stencil() raises:
             print("✅ Double-buffered stencil test PASSED!")
 
 
-def main() raises:
+def main():
     """Run GPU synchronization tests based on command line arguments."""
     print("Puzzle 26: GPU Synchronization Primitives")
     print("=" * 50)
