@@ -1,13 +1,33 @@
-import modal
+import os
 import subprocess
 import tempfile
-import os
+from pathlib import Path
+
+import modal
+
+import tomli as tomllib
+
+def _read_project_dependency(name: str) -> str:
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text())
+    for dep in pyproject["project"]["dependencies"]:
+        if dep.startswith(f"{name}"):
+            return dep
+    raise RuntimeError(f"Could not find dependency for {name!r} in pyproject.toml")
+
+
+MOJO_DEP = _read_project_dependency("mojo")
+MAX_DEP = _read_project_dependency("max")
 
 app = modal.App("76")
 img = (
   modal.Image.from_registry("nvidia/cuda:12.4.0-base-ubuntu22.04")
   .apt_install("python-is-python3", "python3-pip")
-  .pip_install("mojo", index_url="https://dl.modular.com/public/nightly/python/simple/", extra_options="--pre")
+  .pip_install(
+      MOJO_DEP,
+      MAX_DEP,
+      index_url="https://whl.modular.com/nightly/simple/",
+      extra_options="--pre --extra-index-url https://pypi.org/simple",
+  )
 )
 
 @app.function(image=img, gpu="A10")
